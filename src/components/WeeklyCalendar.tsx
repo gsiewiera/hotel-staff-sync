@@ -115,6 +115,9 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
                       onDragLeave={handleDragLeave}
                       onDrop={(e) => handleDrop(e, day, slot.shift)}
                     >
+                      <div className="text-[10px] text-muted-foreground mb-2 font-medium">
+                        {slot.time}
+                      </div>
                       <div className="space-y-1">
                         {staffInSlot.map((s) => (
                           <Badge
