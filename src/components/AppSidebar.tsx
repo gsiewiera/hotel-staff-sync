@@ -1,4 +1,4 @@
-import { Calendar, Users, Sparkles, FileText } from "lucide-react";
+import { Calendar, Users, Sparkles, FileText, DollarSign } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -26,6 +26,7 @@ export function AppSidebar() {
     { title: t("staffList"), url: "/staff", icon: Users },
     { title: t("templates"), url: "/templates", icon: Sparkles },
     { title: t("reports"), url: "/reports", icon: FileText },
+    { title: t("budget"), url: "/budget", icon: DollarSign },
   ];
 
   const isActive = (path: string) => currentPath === path;

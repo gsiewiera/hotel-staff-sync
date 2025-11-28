@@ -94,6 +94,19 @@ export const translations = {
     
     // Time slot
     timeSlot: "Time Slot",
+    
+    // Budget
+    budget: "Budget",
+    budgetAnalysis: "Staff Budget Analysis",
+    budgetDesc: "Track weekly staff costs and compare against department budgets",
+    totalBudget: "Total Budget",
+    actualCost: "Actual Cost",
+    variance: "Variance",
+    overallBudgetUsage: "Overall Budget Usage",
+    overBudget: "Over budget by",
+    remaining: "Remaining",
+    departmentBreakdown: "Department Breakdown",
+    loadingBudgetData: "Loading budget data...",
   },
   pl: {
     // Header
@@ -190,6 +203,19 @@ export const translations = {
     
     // Time slot
     timeSlot: "Przedział Czasu",
+    
+    // Budget
+    budget: "Budżet",
+    budgetAnalysis: "Analiza Budżetu Personelu",
+    budgetDesc: "Śledź tygodniowe koszty personelu i porównuj z budżetami działów",
+    totalBudget: "Całkowity Budżet",
+    actualCost: "Rzeczywisty Koszt",
+    variance: "Odchylenie",
+    overallBudgetUsage: "Wykorzystanie Całkowitego Budżetu",
+    overBudget: "Przekroczenie budżetu o",
+    remaining: "Pozostało",
+    departmentBreakdown: "Podział na Działy",
+    loadingBudgetData: "Ładowanie danych budżetowych...",
   },
 };
 
