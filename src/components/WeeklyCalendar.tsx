@@ -17,6 +17,9 @@ interface Staff {
 interface WeeklyCalendarProps {
   staff: Staff[];
   onStaffDrop: (staffId: string, newDay: string, newShift: string) => void;
+  draggedStaff: string | null;
+  onDragStart: (staffId: string) => void;
+  onDragEnd: () => void;
 }
 
 const SHIFT_HOURS: Record<string, number> = {
@@ -34,8 +37,13 @@ const DEPARTMENT_COLORS: Record<string, string> = {
   restaurant: "bg-dept-restaurant/20 border-dept-restaurant text-dept-restaurant",
 };
 
-export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
-  const [draggedStaff, setDraggedStaff] = useState<string | null>(null);
+export function WeeklyCalendar({ 
+  staff, 
+  onStaffDrop,
+  draggedStaff,
+  onDragStart,
+  onDragEnd
+}: WeeklyCalendarProps) {
   const [dropTarget, setDropTarget] = useState<{ day: string; shift: string } | null>(null);
   const { t } = useLanguage();
 
@@ -70,13 +78,13 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
   };
 
   const handleDragStart = (e: React.DragEvent, staffId: string) => {
-    setDraggedStaff(staffId);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("staffId", staffId.toString());
+    onDragStart(staffId);
   };
 
   const handleDragEnd = () => {
-    setDraggedStaff(null);
+    onDragEnd();
     setDropTarget(null);
   };
 
@@ -101,7 +109,7 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
       onStaffDrop(staffId, englishDay, shift);
     }
     
-    setDraggedStaff(null);
+    onDragEnd();
     setDropTarget(null);
   };
 

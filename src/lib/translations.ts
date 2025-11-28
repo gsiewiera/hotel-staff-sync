@@ -110,6 +110,18 @@ export const translations = {
     weeklyBudget: "Weekly Budget",
     underBudget: "Under Budget",
     budgetUsage: "Budget Usage",
+    
+    // Add Staff
+    addStaff: "Add Staff",
+    addNewStaffMember: "Add New Staff Member",
+    addStaffDesc: "Add a new staff member to the team. They will appear in the unassigned pool.",
+    name: "Name",
+    hourlyRate: "Hourly Rate",
+    adding: "Adding...",
+    addedToStaff: "Added to staff",
+    failedToAddStaff: "Failed to add staff member",
+    unassignedStaff: "Unassigned Staff",
+    dragStaffToSchedule: "Drag staff onto the schedule",
   },
   pl: {
     // Header
@@ -222,6 +234,18 @@ export const translations = {
     weeklyBudget: "Budżet Tygodniowy",
     underBudget: "Poniżej Budżetu",
     budgetUsage: "Wykorzystanie Budżetu",
+    
+    // Add Staff
+    addStaff: "Dodaj Pracownika",
+    addNewStaffMember: "Dodaj Nowego Pracownika",
+    addStaffDesc: "Dodaj nowego członka zespołu. Pojawi się w puli nieprzypisanych.",
+    name: "Imię i nazwisko",
+    hourlyRate: "Stawka Godzinowa",
+    adding: "Dodawanie...",
+    addedToStaff: "Dodano do personelu",
+    failedToAddStaff: "Nie udało się dodać pracownika",
+    unassignedStaff: "Nieprzypisani Pracownicy",
+    dragStaffToSchedule: "Przeciągnij pracowników na harmonogram",
   },
 };
 
