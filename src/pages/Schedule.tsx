@@ -1,70 +1,166 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { WeeklyCalendar } from "@/components/WeeklyCalendar";
 import { ShiftTemplates } from "@/components/ShiftTemplates";
 import { Printer } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface StaffMember {
-  id: number;
+  id: string;
   name: string;
   department: string;
   shift: string;
   avatar: string;
   day?: string;
+  hourly_rate: number;
 }
 
-const INITIAL_STAFF: StaffMember[] = [
-  { id: 1, name: "Sarah Johnson", department: "frontdesk", shift: "Morning", avatar: "SJ", day: "Monday" },
-  { id: 2, name: "Michael Chen", department: "frontdesk", shift: "Evening", avatar: "MC", day: "Monday" },
-  { id: 3, name: "Emma Williams", department: "housekeeping", shift: "Morning", avatar: "EW", day: "Tuesday" },
-  { id: 4, name: "James Martinez", department: "housekeeping", shift: "Morning", avatar: "JM", day: "Wednesday" },
-  { id: 5, name: "Lisa Anderson", department: "maintenance", shift: "Day", avatar: "LA", day: "Thursday" },
-  { id: 6, name: "David Thompson", department: "restaurant", shift: "Split", avatar: "DT", day: "Friday" },
-  { id: 7, name: "Sophie Brown", department: "restaurant", shift: "Evening", avatar: "SB", day: "Saturday" },
-  { id: 8, name: "Ryan Davis", department: "frontdesk", shift: "Night", avatar: "RD", day: "Sunday" },
-];
+const SHIFT_HOURS: Record<string, number> = {
+  Morning: 8,
+  Day: 8,
+  Evening: 8,
+  Night: 8,
+  Split: 6,
+};
 
 export function Schedule() {
-  const [staff, setStaff] = useState<StaffMember[]>(INITIAL_STAFF);
+  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
-  const handleStaffDrop = (staffId: number, newDay: string, newShift: string) => {
-    setStaff(prevStaff => 
-      prevStaff.map(s => 
-        s.id === staffId 
-          ? { ...s, day: newDay, shift: newShift }
-          : s
-      )
-    );
-    
-    const staffMember = staff.find(s => s.id === staffId);
-    toast.success(`${staffMember?.name} ${t("movedToShift")} ${newDay} ${newShift} ${t("shift")}`);
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  const fetchStaff = async () => {
+    try {
+      const { data: staffData, error: staffError } = await supabase
+        .from('staff_members')
+        .select('*');
+
+      if (staffError) throw staffError;
+
+      // Fetch existing schedules
+      const { data: scheduleData, error: scheduleError } = await supabase
+        .from('shift_schedules')
+        .select('*')
+        .eq('week_number', Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000)))
+        .eq('year', new Date().getFullYear());
+
+      if (scheduleError) throw scheduleError;
+
+      // Create a map of schedules by staff_id
+      const scheduleMap = new Map(
+        (scheduleData || []).map(s => [s.staff_id, { day: s.day_of_week, shift: s.shift_type }])
+      );
+
+      // Merge staff with their schedules
+      const staffWithSchedules = (staffData || []).map(s => ({
+        id: s.id,
+        name: s.name,
+        department: s.department,
+        avatar: s.avatar || s.name.split(' ').map((n: string) => n[0]).join(''),
+        hourly_rate: parseFloat(s.hourly_rate.toString()),
+        day: scheduleMap.get(s.id)?.day,
+        shift: scheduleMap.get(s.id)?.shift || 'Morning',
+      }));
+
+      setStaff(staffWithSchedules);
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleApplyTemplate = (staffId: number, pattern: { day: string; shift: string }[]) => {
+  const handleStaffDrop = async (staffId: string, newDay: string, newShift: string) => {
+    try {
+      // Update local state
+      setStaff(prevStaff => 
+        prevStaff.map(s => 
+          s.id === staffId 
+            ? { ...s, day: newDay, shift: newShift }
+            : s
+        )
+      );
+
+      // Save to database
+      const weekNumber = Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000));
+      const year = new Date().getFullYear();
+      const hours = SHIFT_HOURS[newShift] || 8;
+
+      const { error } = await supabase
+        .from('shift_schedules')
+        .upsert({
+          staff_id: staffId,
+          day_of_week: newDay,
+          shift_type: newShift,
+          hours: hours,
+          week_number: weekNumber,
+          year: year,
+        }, {
+          onConflict: 'staff_id,week_number,year'
+        });
+
+      if (error) throw error;
+
+      const staffMember = staff.find(s => s.id === staffId);
+      toast.success(`${staffMember?.name} ${t("movedToShift")} ${newDay} ${newShift} ${t("shift")}`);
+    } catch (error) {
+      console.error('Error updating schedule:', error);
+      toast.error("Failed to update schedule");
+    }
+  };
+
+  const handleApplyTemplate = async (staffId: string, pattern: { day: string; shift: string }[]) => {
     const staffMember = staff.find(s => s.id === staffId);
     if (!staffMember) return;
 
-    // Remove existing assignments for this staff member
-    setStaff(prevStaff => prevStaff.filter(s => s.id !== staffId));
+    try {
+      // Remove existing schedules for this staff member
+      const weekNumber = Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000));
+      const year = new Date().getFullYear();
 
-    // Add new assignments based on template
-    const newAssignments = pattern.map((slot, idx) => ({
-      ...staffMember,
-      id: staffId + idx * 1000,
-      day: slot.day,
-      shift: slot.shift,
-    }));
+      await supabase
+        .from('shift_schedules')
+        .delete()
+        .eq('staff_id', staffId)
+        .eq('week_number', weekNumber)
+        .eq('year', year);
 
-    setStaff(prevStaff => {
-      const filtered = prevStaff.filter(s => s.id < 1000 || s.id % 1000 !== staffId);
-      return [...filtered, ...newAssignments];
-    });
+      // Insert new schedules
+      const schedules = pattern.map(slot => ({
+        staff_id: staffId,
+        day_of_week: slot.day,
+        shift_type: slot.shift,
+        hours: SHIFT_HOURS[slot.shift] || 8,
+        week_number: weekNumber,
+        year: year,
+      }));
 
-    toast.success(`${t("appliedTemplate")} ${staffMember.name}`);
+      const { error } = await supabase
+        .from('shift_schedules')
+        .insert(schedules);
+
+      if (error) throw error;
+
+      toast.success(`${t("appliedTemplate")} ${staffMember.name}`);
+      fetchStaff(); // Refresh data
+    } catch (error) {
+      console.error('Error applying template:', error);
+      toast.error("Failed to apply template");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading schedule...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

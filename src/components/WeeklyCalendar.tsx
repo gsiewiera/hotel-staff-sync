@@ -5,18 +5,27 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Staff {
-  id: number;
+  id: string;
   name: string;
   department: string;
   shift: string;
   avatar: string;
   day?: string;
+  hourly_rate: number;
 }
 
 interface WeeklyCalendarProps {
   staff: Staff[];
-  onStaffDrop: (staffId: number, newDay: string, newShift: string) => void;
+  onStaffDrop: (staffId: string, newDay: string, newShift: string) => void;
 }
+
+const SHIFT_HOURS: Record<string, number> = {
+  Morning: 8,
+  Day: 8,
+  Evening: 8,
+  Night: 8,
+  Split: 6,
+};
 
 const DEPARTMENT_COLORS: Record<string, string> = {
   frontdesk: "bg-dept-frontdesk/20 border-dept-frontdesk text-dept-frontdesk",
@@ -26,7 +35,7 @@ const DEPARTMENT_COLORS: Record<string, string> = {
 };
 
 export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
-  const [draggedStaff, setDraggedStaff] = useState<number | null>(null);
+  const [draggedStaff, setDraggedStaff] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{ day: string; shift: string } | null>(null);
   const { t } = useLanguage();
 
@@ -45,7 +54,22 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
     return staff.filter(s => s.day === day && s.shift === shift);
   };
 
-  const handleDragStart = (e: React.DragEvent, staffId: number) => {
+  const getDailyCost = (dayTranslated: string) => {
+    const dayIndex = DAYS.indexOf(dayTranslated);
+    const dayEn = DAYS_EN[dayIndex];
+    const staffOnDay = staff.filter(s => s.day === dayEn);
+    return staffOnDay.reduce((total, s) => {
+      const hours = SHIFT_HOURS[s.shift] || 8;
+      return total + (s.hourly_rate * hours);
+    }, 0);
+  };
+
+  const getShiftCost = (staffMember: Staff) => {
+    const hours = SHIFT_HOURS[staffMember.shift] || 8;
+    return staffMember.hourly_rate * hours;
+  };
+
+  const handleDragStart = (e: React.DragEvent, staffId: string) => {
     setDraggedStaff(staffId);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("staffId", staffId.toString());
@@ -68,7 +92,7 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
 
   const handleDrop = (e: React.DragEvent, day: string, shift: string) => {
     e.preventDefault();
-    const staffId = parseInt(e.dataTransfer.getData("staffId"));
+    const staffId = e.dataTransfer.getData("staffId");
     
     if (staffId) {
       // Convert translated day back to English for storage
@@ -93,11 +117,17 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
             {/* Header */}
             <div className="grid grid-cols-8 border-b border-border bg-muted/30">
               <div className="p-4 font-semibold text-foreground">{t("timeSlot")}</div>
-              {DAYS.map((day) => (
-                <div key={day} className="border-l border-border p-4 text-center font-semibold text-foreground">
-                  {day}
-                </div>
-              ))}
+              {DAYS.map((day) => {
+                const dayCost = getDailyCost(day);
+                return (
+                  <div key={day} className="border-l border-border p-4 text-center">
+                    <div className="font-semibold text-foreground">{day}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      ${dayCost.toFixed(2)}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Time Slots */}
@@ -126,23 +156,29 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
                         {slot.time}
                       </div>
                       <div className="space-y-1">
-                        {staffInSlot.map((s) => (
-                          <Badge
-                            key={s.id}
-                            variant="outline"
-                            draggable
-                            onDragStart={(e) => handleDragStart(e, s.id)}
-                            onDragEnd={handleDragEnd}
-                            className={cn(
-                              "w-full justify-start text-xs cursor-move transition-all",
-                              DEPARTMENT_COLORS[s.department],
-                              draggedStaff === s.id && "opacity-50 scale-95",
-                              "hover:scale-105 hover:shadow-md"
-                            )}
-                          >
-                            <span className="truncate">{s.name.split(' ')[0]}</span>
-                          </Badge>
-                        ))}
+                        {staffInSlot.map((s) => {
+                          const shiftCost = getShiftCost(s);
+                          return (
+                            <Badge
+                              key={s.id}
+                              variant="outline"
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, s.id)}
+                              onDragEnd={handleDragEnd}
+                              className={cn(
+                                "w-full justify-between text-xs cursor-move transition-all px-2 py-1",
+                                DEPARTMENT_COLORS[s.department],
+                                draggedStaff === s.id && "opacity-50 scale-95",
+                                "hover:scale-105 hover:shadow-md"
+                              )}
+                            >
+                              <span className="truncate">{s.name.split(' ')[0]}</span>
+                              <span className="text-[10px] font-medium ml-1">
+                                ${shiftCost.toFixed(0)}
+                              </span>
+                            </Badge>
+                          );
+                        })}
                       </div>
                     </div>
                   );
