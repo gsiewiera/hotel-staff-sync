@@ -83,21 +83,38 @@ export function Schedule() {
 
       if (scheduleError) throw scheduleError;
 
-      // Create a map of schedules by staff_id
-      const scheduleMap = new Map(
-        (scheduleData || []).map(s => [s.staff_id, { day: s.day_of_week, shift: s.shift_type }])
-      );
-
-      // Merge staff with their schedules
-      const staffWithSchedules = (staffData || []).map(s => ({
-        id: s.id,
-        name: s.name,
-        department: s.department,
-        avatar: s.avatar || s.name.split(' ').map((n: string) => n[0]).join(''),
-        hourly_rate: parseFloat(s.hourly_rate.toString()),
-        day: scheduleMap.get(s.id)?.day,
-        shift: scheduleMap.get(s.id)?.shift || 'Morning',
-      }));
+      // Create staff instances for each schedule (allows same staff on multiple days)
+      const staffWithSchedules: StaffMember[] = [];
+      
+      (staffData || []).forEach(staffMember => {
+        const staffSchedules = (scheduleData || []).filter(s => s.staff_id === staffMember.id);
+        
+        if (staffSchedules.length > 0) {
+          // Create one instance per schedule
+          staffSchedules.forEach(schedule => {
+            staffWithSchedules.push({
+              id: staffMember.id,
+              name: staffMember.name,
+              department: staffMember.department,
+              avatar: staffMember.avatar || staffMember.name.split(' ').map((n: string) => n[0]).join(''),
+              hourly_rate: parseFloat(staffMember.hourly_rate.toString()),
+              day: schedule.day_of_week,
+              shift: schedule.shift_type,
+            });
+          });
+        } else {
+          // No schedule assigned yet
+          staffWithSchedules.push({
+            id: staffMember.id,
+            name: staffMember.name,
+            department: staffMember.department,
+            avatar: staffMember.avatar || staffMember.name.split(' ').map((n: string) => n[0]).join(''),
+            hourly_rate: parseFloat(staffMember.hourly_rate.toString()),
+            day: undefined,
+            shift: 'Morning',
+          });
+        }
+      });
 
       setStaff(staffWithSchedules);
       calculateWeeklyCost(staffWithSchedules);
@@ -108,16 +125,44 @@ export function Schedule() {
     }
   };
 
-  const handleStaffDrop = async (staffId: string, newDay: string, newShift: string) => {
+  const handleStaffDrop = async (staffId: string, newDay: string, newShift: string, sourceDay?: string, sourceShift?: string) => {
     try {
-      // Update local state
-      setStaff(prevStaff => 
-        prevStaff.map(s => 
-          s.id === staffId 
-            ? { ...s, day: newDay, shift: newShift }
-            : s
-        )
-      );
+      // If dragging from calendar to calendar, remove the old schedule first
+      if (sourceDay && sourceShift) {
+        const weekNumber = Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000));
+        const year = new Date().getFullYear();
+        
+        await supabase
+          .from('shift_schedules')
+          .delete()
+          .eq('staff_id', staffId)
+          .eq('day_of_week', sourceDay)
+          .eq('shift_type', sourceShift)
+          .eq('week_number', weekNumber)
+          .eq('year', year);
+        
+        // Update local state: remove old instance, add new one
+        setStaff(prevStaff => {
+          const staffMember = prevStaff.find(s => s.id === staffId && s.day === sourceDay && s.shift === sourceShift);
+          if (!staffMember) return prevStaff;
+          
+          return [
+            ...prevStaff.filter(s => !(s.id === staffId && s.day === sourceDay && s.shift === sourceShift)),
+            { ...staffMember, day: newDay, shift: newShift }
+          ];
+        });
+      } else {
+        // Dragging from unassigned panel - just add new instance
+        setStaff(prevStaff => {
+          const unassignedStaff = prevStaff.find(s => s.id === staffId && !s.day);
+          if (!unassignedStaff) return prevStaff;
+          
+          return [
+            ...prevStaff.filter(s => s.id !== staffId || s.day), // Keep all assigned instances
+            { ...unassignedStaff, day: newDay, shift: newShift }
+          ];
+        });
+      }
 
       // Save to database
       const weekNumber = Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000));
@@ -134,7 +179,7 @@ export function Schedule() {
           week_number: weekNumber,
           year: year,
         }, {
-          onConflict: 'staff_id,week_number,year'
+          onConflict: 'staff_id,day_of_week,week_number,year'
         });
 
       if (error) throw error;
