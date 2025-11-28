@@ -115,3 +115,54 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles for weekly schedule */
+@media print {
+  @page {
+    size: landscape;
+    margin: 1cm;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Hide header, tabs, and navigation elements */
+  header,
+  [role="tablist"],
+  button:not(.print\:block) {
+    display: none !important;
+  }
+
+  /* Optimize calendar for print */
+  .min-h-screen {
+    min-height: auto;
+  }
+
+  /* Ensure calendar fits on page */
+  [class*="grid-cols-8"] {
+    font-size: 11px;
+  }
+
+  /* Simplify colors for better print quality */
+  * {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Keep department colors visible */
+  [class*="bg-dept-"] {
+    border: 2px solid black !important;
+    background-color: white !important;
+  }
+
+  /* Keep borders visible */
+  [class*="border"] {
+    border-color: black !important;
+  }
+}
