@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { WeeklyCalendar } from "@/components/WeeklyCalendar";
 import { ShiftTemplates } from "@/components/ShiftTemplates";
+import { AddStaffDialog } from "@/components/AddStaffDialog";
+import { UnassignedStaffPanel } from "@/components/UnassignedStaffPanel";
 import { Printer } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -30,6 +32,7 @@ export function Schedule() {
   const [loading, setLoading] = useState(true);
   const [weeklyBudget, setWeeklyBudget] = useState(0);
   const [weeklyCost, setWeeklyCost] = useState(0);
+  const [draggedStaff, setDraggedStaff] = useState<string | null>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -147,6 +150,17 @@ export function Schedule() {
     }
   };
 
+  const handleDragStart = (staffId: string) => {
+    setDraggedStaff(staffId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedStaff(null);
+  };
+
+  const unassignedStaff = staff.filter(s => !s.day);
+  const assignedStaff = staff.filter(s => s.day);
+
   const handleApplyTemplate = async (staffId: string, pattern: { day: string; shift: string }[]) => {
     const staffMember = staff.find(s => s.id === staffId);
     if (!staffMember) return;
@@ -238,6 +252,7 @@ export function Schedule() {
           </p>
         </Card>
         <div className="flex gap-2">
+          <AddStaffDialog onStaffAdded={fetchStaff} />
           <ShiftTemplates staff={staff} onApplyTemplate={handleApplyTemplate} />
           <button
             onClick={() => window.print()}
@@ -248,7 +263,28 @@ export function Schedule() {
           </button>
         </div>
       </div>
-      <WeeklyCalendar staff={staff} onStaffDrop={handleStaffDrop} />
+      
+      {/* Unassigned Staff Panel */}
+      {unassignedStaff.length > 0 && (
+        <UnassignedStaffPanel
+          staff={unassignedStaff}
+          onDragStart={(e, staffId) => {
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("staffId", staffId);
+            handleDragStart(staffId);
+          }}
+          onDragEnd={handleDragEnd}
+          draggedStaff={draggedStaff}
+        />
+      )}
+      
+      <WeeklyCalendar 
+        staff={assignedStaff} 
+        onStaffDrop={handleStaffDrop}
+        draggedStaff={draggedStaff}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      />
     </div>
   );
 }
