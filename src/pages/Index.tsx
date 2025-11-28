@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Users, Clock } from "lucide-react";
+import { Calendar, Users, Clock, Printer } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -93,11 +93,20 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-6">
-            <Card className="p-4 bg-accent/10 border-accent">
-              <p className="text-sm text-foreground">
-                <strong>💡 Tip:</strong> Drag and drop staff members to reassign them to different days and shifts
-              </p>
-            </Card>
+            <div className="flex items-center justify-between gap-4 print:hidden">
+              <Card className="flex-1 p-4 bg-accent/10 border-accent">
+                <p className="text-sm text-foreground">
+                  <strong>💡 Tip:</strong> Drag and drop staff members to reassign them to different days and shifts
+                </p>
+              </Card>
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <Printer className="h-4 w-4" />
+                Print Schedule
+              </button>
+            </div>
             <WeeklyCalendar staff={staff} onStaffDrop={handleStaffDrop} />
           </TabsContent>
 
