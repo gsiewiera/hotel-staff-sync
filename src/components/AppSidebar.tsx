@@ -1,6 +1,7 @@
 import { Calendar, Users, Sparkles, FileText } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import {
   Sidebar,
@@ -14,17 +15,18 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const items = [
-  { title: "Schedule", url: "/", icon: Calendar },
-  { title: "Staff", url: "/staff", icon: Users },
-  { title: "Templates", url: "/templates", icon: Sparkles },
-  { title: "Reports", url: "/reports", icon: FileText },
-];
-
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { t } = useLanguage();
+
+  const items = [
+    { title: t("schedule"), url: "/", icon: Calendar },
+    { title: t("staffList"), url: "/staff", icon: Users },
+    { title: t("templates"), url: "/templates", icon: Sparkles },
+    { title: t("reports"), url: "/reports", icon: FileText },
+  ];
 
   const isActive = (path: string) => currentPath === path;
 
@@ -32,7 +34,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
