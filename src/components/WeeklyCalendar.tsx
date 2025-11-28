@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Staff {
   id: number;
@@ -17,15 +18,6 @@ interface WeeklyCalendarProps {
   onStaffDrop: (staffId: number, newDay: string, newShift: string) => void;
 }
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const TIME_SLOTS = [
-  { label: "Morning", time: "7AM-3PM", shift: "Morning" },
-  { label: "Day", time: "8AM-4PM", shift: "Day" },
-  { label: "Evening", time: "3PM-11PM", shift: "Evening" },
-  { label: "Night", time: "11PM-7AM", shift: "Night" },
-  { label: "Split", time: "Split Shift", shift: "Split" },
-];
-
 const DEPARTMENT_COLORS: Record<string, string> = {
   frontdesk: "bg-dept-frontdesk/20 border-dept-frontdesk text-dept-frontdesk",
   housekeeping: "bg-dept-housekeeping/20 border-dept-housekeeping text-dept-housekeeping",
@@ -36,6 +28,18 @@ const DEPARTMENT_COLORS: Record<string, string> = {
 export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
   const [draggedStaff, setDraggedStaff] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<{ day: string; shift: string } | null>(null);
+  const { t } = useLanguage();
+
+  const DAYS = [t("monday"), t("tuesday"), t("wednesday"), t("thursday"), t("friday"), t("saturday"), t("sunday")];
+  const DAYS_EN = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  
+  const TIME_SLOTS = [
+    { label: t("morning"), time: t("morningTime"), shift: "Morning" },
+    { label: t("day"), time: t("dayTime"), shift: "Day" },
+    { label: t("evening"), time: t("eveningTime"), shift: "Evening" },
+    { label: t("night"), time: t("nightTime"), shift: "Night" },
+    { label: t("split"), time: t("splitTime"), shift: "Split" },
+  ];
 
   const getStaffForDayAndShift = (day: string, shift: string) => {
     return staff.filter(s => s.day === day && s.shift === shift);
@@ -67,7 +71,10 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
     const staffId = parseInt(e.dataTransfer.getData("staffId"));
     
     if (staffId) {
-      onStaffDrop(staffId, day, shift);
+      // Convert translated day back to English for storage
+      const dayIndex = DAYS.indexOf(day);
+      const englishDay = DAYS_EN[dayIndex];
+      onStaffDrop(staffId, englishDay, shift);
     }
     
     setDraggedStaff(null);
@@ -85,7 +92,7 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
           <div className="min-w-[900px]">
             {/* Header */}
             <div className="grid grid-cols-8 border-b border-border bg-muted/30">
-              <div className="p-4 font-semibold text-foreground">Time Slot</div>
+              <div className="p-4 font-semibold text-foreground">{t("timeSlot")}</div>
               {DAYS.map((day) => (
                 <div key={day} className="border-l border-border p-4 text-center font-semibold text-foreground">
                   {day}
@@ -148,19 +155,19 @@ export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
 
       {/* Legend */}
       <Card className="p-4">
-        <h3 className="mb-3 text-sm font-semibold text-foreground">Department Legend</h3>
+        <h3 className="mb-3 text-sm font-semibold text-foreground">{t("departmentLegend")}</h3>
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className="bg-dept-frontdesk/20 border-dept-frontdesk text-dept-frontdesk">
-            Front Desk
+            {t("frontDesk")}
           </Badge>
           <Badge variant="outline" className="bg-dept-housekeeping/20 border-dept-housekeeping text-dept-housekeeping">
-            Housekeeping
+            {t("housekeeping")}
           </Badge>
           <Badge variant="outline" className="bg-dept-maintenance/20 border-dept-maintenance text-dept-maintenance">
-            Maintenance
+            {t("maintenance")}
           </Badge>
           <Badge variant="outline" className="bg-dept-restaurant/20 border-dept-restaurant text-dept-restaurant">
-            Restaurant
+            {t("restaurant")}
           </Badge>
         </div>
       </Card>

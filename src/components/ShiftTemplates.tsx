@@ -19,50 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { StaffMember } from "@/pages/Schedule";
-
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-const SHIFT_TEMPLATES = [
-  {
-    id: "full-week",
-    name: "Full Week",
-    description: "Same shift, Monday through Sunday",
-    icon: Calendar,
-    pattern: (shift: string) => DAYS.map(day => ({ day, shift })),
-  },
-  {
-    id: "weekdays",
-    name: "Weekdays Only",
-    description: "Monday through Friday",
-    icon: Clock,
-    pattern: (shift: string) => 
-      ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(day => ({ day, shift })),
-  },
-  {
-    id: "weekends",
-    name: "Weekends Only",
-    description: "Saturday and Sunday",
-    icon: Clock,
-    pattern: (shift: string) => 
-      ["Saturday", "Sunday"].map(day => ({ day, shift })),
-  },
-  {
-    id: "alternating",
-    name: "Alternating Days",
-    description: "Monday, Wednesday, Friday, Sunday",
-    icon: Calendar,
-    pattern: (shift: string) => 
-      ["Monday", "Wednesday", "Friday", "Sunday"].map(day => ({ day, shift })),
-  },
-  {
-    id: "mid-week",
-    name: "Mid Week",
-    description: "Tuesday, Wednesday, Thursday",
-    icon: Clock,
-    pattern: (shift: string) => 
-      ["Tuesday", "Wednesday", "Thursday"].map(day => ({ day, shift })),
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ShiftTemplatesProps {
   staff: StaffMember[];
@@ -74,6 +31,51 @@ export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) 
   const [selectedShift, setSelectedShift] = useState<string>("Morning");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
+
+  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  
+  const SHIFT_TEMPLATES = [
+    {
+      id: "full-week",
+      name: t("fullWeek"),
+      description: t("fullWeekDesc"),
+      icon: Calendar,
+      pattern: (shift: string) => DAYS.map(day => ({ day, shift })),
+    },
+    {
+      id: "weekdays",
+      name: t("weekdaysOnly"),
+      description: t("weekdaysOnlyDesc"),
+      icon: Clock,
+      pattern: (shift: string) => 
+        ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(day => ({ day, shift })),
+    },
+    {
+      id: "weekends",
+      name: t("weekendsOnly"),
+      description: t("weekendsOnlyDesc"),
+      icon: Clock,
+      pattern: (shift: string) => 
+        ["Saturday", "Sunday"].map(day => ({ day, shift })),
+    },
+    {
+      id: "alternating",
+      name: t("alternatingDays"),
+      description: t("alternatingDaysDesc"),
+      icon: Calendar,
+      pattern: (shift: string) => 
+        ["Monday", "Wednesday", "Friday", "Sunday"].map(day => ({ day, shift })),
+    },
+    {
+      id: "mid-week",
+      name: t("midWeek"),
+      description: t("midWeekDesc"),
+      icon: Clock,
+      pattern: (shift: string) => 
+        ["Tuesday", "Wednesday", "Thursday"].map(day => ({ day, shift })),
+    },
+  ];
 
   const handleApply = () => {
     if (!selectedStaff || !selectedTemplate) return;
@@ -95,24 +97,24 @@ export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) 
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Sparkles className="h-4 w-4" />
-          Apply Shift Template
+          {t("applyShiftTemplate")}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Apply Shift Template</DialogTitle>
+          <DialogTitle>{t("applyTemplate")}</DialogTitle>
           <DialogDescription>
-            Quickly assign common shift patterns to staff members
+            {t("quicklyAssign")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Staff Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Select Staff Member</label>
+            <label className="text-sm font-medium text-foreground">{t("selectStaffMember")}</label>
             <Select value={selectedStaff} onValueChange={setSelectedStaff}>
               <SelectTrigger>
-                <SelectValue placeholder="Choose a staff member" />
+                <SelectValue placeholder={t("chooseStaffMember")} />
               </SelectTrigger>
               <SelectContent>
                 {staff.map((s) => (
@@ -131,24 +133,24 @@ export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) 
 
           {/* Shift Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Select Shift Type</label>
+            <label className="text-sm font-medium text-foreground">{t("selectShiftType")}</label>
             <Select value={selectedShift} onValueChange={setSelectedShift}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Morning">Morning (7AM-3PM)</SelectItem>
-                <SelectItem value="Day">Day (8AM-4PM)</SelectItem>
-                <SelectItem value="Evening">Evening (3PM-11PM)</SelectItem>
-                <SelectItem value="Night">Night (11PM-7AM)</SelectItem>
-                <SelectItem value="Split">Split Shift</SelectItem>
+                <SelectItem value="Morning">{t("morning")} ({t("morningTime")})</SelectItem>
+                <SelectItem value="Day">{t("day")} ({t("dayTime")})</SelectItem>
+                <SelectItem value="Evening">{t("evening")} ({t("eveningTime")})</SelectItem>
+                <SelectItem value="Night">{t("night")} ({t("nightTime")})</SelectItem>
+                <SelectItem value="Split">{t("split")} ({t("splitTime")})</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Template Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Select Template</label>
+            <label className="text-sm font-medium text-foreground">{t("selectTemplate")}</label>
             <div className="grid gap-3 sm:grid-cols-2">
               {SHIFT_TEMPLATES.map((template) => {
                 const Icon = template.icon;
@@ -184,9 +186,9 @@ export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) 
           {/* Preview */}
           {selectedTemplate && (
             <Card className="bg-muted/50 p-4">
-              <h4 className="mb-2 text-sm font-semibold text-foreground">Preview</h4>
+              <h4 className="mb-2 text-sm font-semibold text-foreground">{t("preview")}</h4>
               <div className="flex flex-wrap gap-2">
-                {SHIFT_TEMPLATES.find(t => t.id === selectedTemplate)
+                {SHIFT_TEMPLATES.find(temp => temp.id === selectedTemplate)
                   ?.pattern(selectedShift)
                   .map((slot, idx) => (
                     <Badge key={idx} variant="secondary">
@@ -199,13 +201,13 @@ export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) 
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button 
               onClick={handleApply}
               disabled={!selectedStaff || !selectedTemplate}
             >
-              Apply Template
+              {t("apply")}
             </Button>
           </div>
         </div>

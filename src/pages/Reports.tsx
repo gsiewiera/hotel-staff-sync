@@ -1,20 +1,23 @@
 import { BarChart3, Users, Clock, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Reports() {
+  const { t } = useLanguage();
+  
   const stats = [
-    { label: "Total Staff", value: "8", icon: Users, color: "text-blue-600" },
-    { label: "This Week", value: "Week 47", icon: Calendar, color: "text-green-600" },
-    { label: "Avg Hours", value: "38.5", icon: Clock, color: "text-orange-600" },
-    { label: "Departments", value: "4", icon: BarChart3, color: "text-purple-600" },
+    { label: t("totalStaff"), value: "8", icon: Users, color: "text-blue-600" },
+    { label: t("thisWeek"), value: `${t("week")} 47`, icon: Calendar, color: "text-green-600" },
+    { label: t("avgHours"), value: "38.5", icon: Clock, color: "text-orange-600" },
+    { label: t("departments"), value: "4", icon: BarChart3, color: "text-purple-600" },
   ];
 
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Reports & Analytics</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">{t("reportsAnalytics")}</h2>
         <p className="text-muted-foreground">
-          View scheduling statistics and workforce analytics
+          {t("reportsDesc")}
         </p>
       </Card>
 
@@ -38,19 +41,19 @@ export function Reports() {
       </div>
 
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Department Distribution</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">{t("departmentDistribution")}</h3>
         <div className="space-y-3">
           {[
-            { dept: "Front Desk", count: 3, color: "bg-dept-frontdesk" },
-            { dept: "Housekeeping", count: 2, color: "bg-dept-housekeeping" },
-            { dept: "Maintenance", count: 1, color: "bg-dept-maintenance" },
-            { dept: "Restaurant", count: 2, color: "bg-dept-restaurant" },
+            { dept: t("frontDesk"), count: 3, color: "bg-dept-frontdesk" },
+            { dept: t("housekeeping"), count: 2, color: "bg-dept-housekeeping" },
+            { dept: t("maintenance"), count: 1, color: "bg-dept-maintenance" },
+            { dept: t("restaurant"), count: 2, color: "bg-dept-restaurant" },
           ].map((item) => (
             <div key={item.dept} className="flex items-center gap-3">
               <div className="flex-1">
                 <div className="flex justify-between mb-1">
                   <span className="text-sm font-medium text-foreground">{item.dept}</span>
-                  <span className="text-sm text-muted-foreground">{item.count} staff</span>
+                  <span className="text-sm text-muted-foreground">{item.count} {t("staff")}</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div 

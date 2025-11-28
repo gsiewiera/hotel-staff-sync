@@ -1,21 +1,24 @@
 import { Calendar, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Templates() {
+  const { t } = useLanguage();
+  
   const templates = [
-    { name: "Full Week", description: "Same shift, Monday through Sunday", icon: Calendar },
-    { name: "Weekdays Only", description: "Monday through Friday", icon: Clock },
-    { name: "Weekends Only", description: "Saturday and Sunday", icon: Clock },
-    { name: "Alternating Days", description: "Monday, Wednesday, Friday, Sunday", icon: Calendar },
-    { name: "Mid Week", description: "Tuesday, Wednesday, Thursday", icon: Clock },
+    { name: t("fullWeek"), description: t("fullWeekDesc"), icon: Calendar },
+    { name: t("weekdaysOnly"), description: t("weekdaysOnlyDesc"), icon: Clock },
+    { name: t("weekendsOnly"), description: t("weekendsOnlyDesc"), icon: Clock },
+    { name: t("alternatingDays"), description: t("alternatingDaysDesc"), icon: Calendar },
+    { name: t("midWeek"), description: t("midWeekDesc"), icon: Clock },
   ];
 
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Shift Templates</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">{t("shiftTemplates")}</h2>
         <p className="text-muted-foreground">
-          Pre-defined shift patterns to quickly assign schedules. Use these templates from the Schedule view.
+          {t("shiftTemplatesDesc")}
         </p>
       </Card>
 

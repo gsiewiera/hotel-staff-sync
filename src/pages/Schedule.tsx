@@ -4,6 +4,7 @@ import { WeeklyCalendar } from "@/components/WeeklyCalendar";
 import { ShiftTemplates } from "@/components/ShiftTemplates";
 import { Printer } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface StaffMember {
   id: number;
@@ -27,6 +28,7 @@ const INITIAL_STAFF: StaffMember[] = [
 
 export function Schedule() {
   const [staff, setStaff] = useState<StaffMember[]>(INITIAL_STAFF);
+  const { t } = useLanguage();
 
   const handleStaffDrop = (staffId: number, newDay: string, newShift: string) => {
     setStaff(prevStaff => 
@@ -38,7 +40,7 @@ export function Schedule() {
     );
     
     const staffMember = staff.find(s => s.id === staffId);
-    toast.success(`${staffMember?.name} moved to ${newDay} ${newShift} shift`);
+    toast.success(`${staffMember?.name} ${t("movedToShift")} ${newDay} ${newShift} ${t("shift")}`);
   };
 
   const handleApplyTemplate = (staffId: number, pattern: { day: string; shift: string }[]) => {
@@ -61,7 +63,7 @@ export function Schedule() {
       return [...filtered, ...newAssignments];
     });
 
-    toast.success(`Applied template to ${staffMember.name}`);
+    toast.success(`${t("appliedTemplate")} ${staffMember.name}`);
   };
 
   return (
@@ -69,7 +71,7 @@ export function Schedule() {
       <div className="flex items-center justify-between gap-4 print:hidden">
         <Card className="flex-1 p-4 bg-accent/10 border-accent">
           <p className="text-sm text-foreground">
-            <strong>💡 Tip:</strong> Drag and drop staff members to reassign them to different days and shifts
+            <strong>💡 {t("tip")}:</strong> {t("dragDropTip")}
           </p>
         </Card>
         <div className="flex gap-2">
@@ -79,7 +81,7 @@ export function Schedule() {
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Printer className="h-4 w-4" />
-            Print
+            {t("print")}
           </button>
         </div>
       </div>
