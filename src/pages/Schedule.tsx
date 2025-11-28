@@ -28,11 +28,40 @@ const SHIFT_HOURS: Record<string, number> = {
 export function Schedule() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [loading, setLoading] = useState(true);
+  const [weeklyBudget, setWeeklyBudget] = useState(0);
+  const [weeklyCost, setWeeklyCost] = useState(0);
   const { t } = useLanguage();
 
   useEffect(() => {
     fetchStaff();
+    fetchWeeklyBudget();
   }, []);
+
+  const fetchWeeklyBudget = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('weekly_budget')
+        .eq('department', 'overall')
+        .eq('month', new Date().getMonth() + 1)
+        .eq('year', new Date().getFullYear())
+        .maybeSingle();
+
+      if (error) throw error;
+      setWeeklyBudget(data ? parseFloat(data.weekly_budget.toString()) : 0);
+    } catch (error) {
+      console.error('Error fetching budget:', error);
+    }
+  };
+
+  const calculateWeeklyCost = (staffList: StaffMember[]) => {
+    const total = staffList.reduce((sum, s) => {
+      if (!s.day) return sum;
+      const hours = SHIFT_HOURS[s.shift] || 8;
+      return sum + (s.hourly_rate * hours);
+    }, 0);
+    setWeeklyCost(total);
+  };
 
   const fetchStaff = async () => {
     try {
@@ -68,6 +97,7 @@ export function Schedule() {
       }));
 
       setStaff(staffWithSchedules);
+      calculateWeeklyCost(staffWithSchedules);
     } catch (error) {
       console.error('Error fetching staff:', error);
     } finally {
@@ -108,6 +138,9 @@ export function Schedule() {
 
       const staffMember = staff.find(s => s.id === staffId);
       toast.success(`${staffMember?.name} ${t("movedToShift")} ${newDay} ${newShift} ${t("shift")}`);
+      
+      // Recalculate weekly cost
+      calculateWeeklyCost(staff);
     } catch (error) {
       console.error('Error updating schedule:', error);
       toast.error("Failed to update schedule");
@@ -164,6 +197,40 @@ export function Schedule() {
 
   return (
     <div className="space-y-6">
+      {/* Weekly Budget Summary */}
+      <Card className="p-6 bg-gradient-to-r from-primary/5 to-accent/5">
+        <div className="grid gap-6 md:grid-cols-3">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">{t("weeklyBudget")}</p>
+            <p className="text-3xl font-bold text-foreground">${weeklyBudget.toFixed(2)}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">{t("actualCost")}</p>
+            <p className="text-3xl font-bold text-foreground">${weeklyCost.toFixed(2)}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">
+              {weeklyCost <= weeklyBudget ? t("underBudget") : t("overBudget")}
+            </p>
+            <p className={`text-3xl font-bold ${weeklyCost <= weeklyBudget ? 'text-green-600' : 'text-red-600'}`}>
+              ${Math.abs(weeklyBudget - weeklyCost).toFixed(2)}
+            </p>
+            <div className="mt-2">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                <span>{t("budgetUsage")}</span>
+                <span>{weeklyBudget > 0 ? ((weeklyCost / weeklyBudget) * 100).toFixed(1) : 0}%</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all ${weeklyCost > weeklyBudget ? 'bg-red-500' : 'bg-green-500'}`}
+                  style={{ width: `${Math.min((weeklyCost / weeklyBudget) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <div className="flex items-center justify-between gap-4 print:hidden">
         <Card className="flex-1 p-4 bg-accent/10 border-accent">
           <p className="text-sm text-foreground">

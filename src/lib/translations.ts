@@ -107,6 +107,9 @@ export const translations = {
     remaining: "Remaining",
     departmentBreakdown: "Department Breakdown",
     loadingBudgetData: "Loading budget data...",
+    weeklyBudget: "Weekly Budget",
+    underBudget: "Under Budget",
+    budgetUsage: "Budget Usage",
   },
   pl: {
     // Header
@@ -216,6 +219,9 @@ export const translations = {
     remaining: "Pozostało",
     departmentBreakdown: "Podział na Działy",
     loadingBudgetData: "Ładowanie danych budżetowych...",
+    weeklyBudget: "Budżet Tygodniowy",
+    underBudget: "Poniżej Budżetu",
+    budgetUsage: "Wykorzystanie Budżetu",
   },
 };
 
