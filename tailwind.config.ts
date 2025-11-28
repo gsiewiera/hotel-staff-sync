@@ -57,6 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        hotel: {
+          gold: "hsl(var(--hotel-gold))",
+          navy: "hsl(var(--hotel-navy))",
+          slate: "hsl(var(--hotel-slate))",
+        },
+        dept: {
+          frontdesk: "hsl(var(--dept-frontdesk))",
+          housekeeping: "hsl(var(--dept-housekeeping))",
+          maintenance: "hsl(var(--dept-maintenance))",
+          restaurant: "hsl(var(--dept-restaurant))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
