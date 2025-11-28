@@ -16,7 +16,7 @@ interface Staff {
 
 interface WeeklyCalendarProps {
   staff: Staff[];
-  onStaffDrop: (staffId: string, newDay: string, newShift: string) => void;
+  onStaffDrop: (staffId: string, newDay: string, newShift: string, sourceDay?: string, sourceShift?: string) => void;
   draggedStaff: string | null;
   onDragStart: (staffId: string) => void;
   onDragEnd: () => void;
@@ -77,9 +77,11 @@ export function WeeklyCalendar({
     return staffMember.hourly_rate * hours;
   };
 
-  const handleDragStart = (e: React.DragEvent, staffId: string) => {
+  const handleDragStart = (e: React.DragEvent, staffId: string, sourceDay?: string, sourceShift?: string) => {
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("staffId", staffId.toString());
+    e.dataTransfer.setData("sourceDay", sourceDay || "");
+    e.dataTransfer.setData("sourceShift", sourceShift || "");
     onDragStart(staffId);
   };
 
@@ -101,12 +103,16 @@ export function WeeklyCalendar({
   const handleDrop = (e: React.DragEvent, day: string, shift: string) => {
     e.preventDefault();
     const staffId = e.dataTransfer.getData("staffId");
+    const sourceDay = e.dataTransfer.getData("sourceDay");
+    const sourceShift = e.dataTransfer.getData("sourceShift");
     
     if (staffId) {
       // Convert translated day back to English for storage
       const dayIndex = DAYS.indexOf(day);
       const englishDay = DAYS_EN[dayIndex];
-      onStaffDrop(staffId, englishDay, shift);
+      
+      // Pass source day/shift for proper state management
+      onStaffDrop(staffId, englishDay, shift, sourceDay || undefined, sourceShift || undefined);
     }
     
     onDragEnd();
@@ -171,7 +177,7 @@ export function WeeklyCalendar({
                               key={s.id}
                               variant="outline"
                               draggable
-                              onDragStart={(e) => handleDragStart(e, s.id)}
+                              onDragStart={(e) => handleDragStart(e, s.id, s.day, s.shift)}
                               onDragEnd={handleDragEnd}
                               className={cn(
                                 "w-full justify-between text-xs cursor-move transition-all px-2 py-1",
