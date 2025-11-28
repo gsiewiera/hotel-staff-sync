@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StaffCard } from "@/components/StaffCard";
 import { WeeklyCalendar } from "@/components/WeeklyCalendar";
+import { ShiftTemplates } from "@/components/ShiftTemplates";
 import { toast } from "sonner";
 
 export interface StaffMember {
@@ -56,6 +57,30 @@ const Index = () => {
     toast.success(`${staffMember?.name} moved to ${newDay} ${newShift} shift`);
   };
 
+  const handleApplyTemplate = (staffId: number, pattern: { day: string; shift: string }[]) => {
+    const staffMember = staff.find(s => s.id === staffId);
+    if (!staffMember) return;
+
+    // Remove existing assignments for this staff member
+    setStaff(prevStaff => prevStaff.filter(s => s.id !== staffId));
+
+    // Add new assignments based on template
+    const newAssignments = pattern.map((slot, idx) => ({
+      ...staffMember,
+      id: staffId + idx * 1000, // Temporary unique IDs for multiple slots
+      day: slot.day,
+      shift: slot.shift,
+    }));
+
+    setStaff(prevStaff => {
+      // Remove old entries for this staff member
+      const filtered = prevStaff.filter(s => s.id < 1000 || s.id % 1000 !== staffId);
+      return [...filtered, ...newAssignments];
+    });
+
+    toast.success(`Applied template to ${staffMember.name}`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -99,13 +124,16 @@ const Index = () => {
                   <strong>💡 Tip:</strong> Drag and drop staff members to reassign them to different days and shifts
                 </p>
               </Card>
-              <button
-                onClick={() => window.print()}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                <Printer className="h-4 w-4" />
-                Print Schedule
-              </button>
+              <div className="flex gap-2">
+                <ShiftTemplates staff={staff} onApplyTemplate={handleApplyTemplate} />
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  <Printer className="h-4 w-4" />
+                  Print Schedule
+                </button>
+              </div>
             </div>
             <WeeklyCalendar staff={staff} onStaffDrop={handleStaffDrop} />
           </TabsContent>
