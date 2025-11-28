@@ -23,7 +23,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ShiftTemplatesProps {
   staff: StaffMember[];
-  onApplyTemplate: (staffId: number, pattern: { day: string; shift: string }[]) => void;
+  onApplyTemplate: (staffId: string, pattern: { day: string; shift: string }[]) => void;
 }
 
 export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) {
@@ -84,7 +84,7 @@ export function ShiftTemplates({ staff, onApplyTemplate }: ShiftTemplatesProps) 
     if (!template) return;
 
     const pattern = template.pattern(selectedShift);
-    onApplyTemplate(parseInt(selectedStaff), pattern);
+    onApplyTemplate(selectedStaff, pattern);
     
     // Reset and close
     setSelectedStaff("");
