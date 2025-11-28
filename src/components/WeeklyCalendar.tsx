@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface Staff {
   id: number;
@@ -7,10 +9,12 @@ interface Staff {
   department: string;
   shift: string;
   avatar: string;
+  day?: string;
 }
 
 interface WeeklyCalendarProps {
   staff: Staff[];
+  onStaffDrop: (staffId: number, newDay: string, newShift: string) => void;
 }
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -29,9 +33,49 @@ const DEPARTMENT_COLORS: Record<string, string> = {
   restaurant: "bg-dept-restaurant/20 border-dept-restaurant text-dept-restaurant",
 };
 
-export function WeeklyCalendar({ staff }: WeeklyCalendarProps) {
-  const getStaffForShift = (shift: string) => {
-    return staff.filter(s => s.shift.includes(shift));
+export function WeeklyCalendar({ staff, onStaffDrop }: WeeklyCalendarProps) {
+  const [draggedStaff, setDraggedStaff] = useState<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ day: string; shift: string } | null>(null);
+
+  const getStaffForDayAndShift = (day: string, shift: string) => {
+    return staff.filter(s => s.day === day && s.shift === shift);
+  };
+
+  const handleDragStart = (e: React.DragEvent, staffId: number) => {
+    setDraggedStaff(staffId);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("staffId", staffId.toString());
+  };
+
+  const handleDragEnd = () => {
+    setDraggedStaff(null);
+    setDropTarget(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, day: string, shift: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDropTarget({ day, shift });
+  };
+
+  const handleDragLeave = () => {
+    setDropTarget(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, day: string, shift: string) => {
+    e.preventDefault();
+    const staffId = parseInt(e.dataTransfer.getData("staffId"));
+    
+    if (staffId) {
+      onStaffDrop(staffId, day, shift);
+    }
+    
+    setDraggedStaff(null);
+    setDropTarget(null);
+  };
+
+  const isDropTarget = (day: string, shift: string) => {
+    return dropTarget?.day === day && dropTarget?.shift === shift;
   };
 
   return (
@@ -57,15 +101,34 @@ export function WeeklyCalendar({ staff }: WeeklyCalendarProps) {
                   <div className="text-xs text-muted-foreground">{slot.time}</div>
                 </div>
                 {DAYS.map((day) => {
-                  const staffInSlot = getStaffForShift(slot.shift);
+                  const staffInSlot = getStaffForDayAndShift(day, slot.shift);
+                  const isTarget = isDropTarget(day, slot.shift);
+                  
                   return (
-                    <div key={day} className="border-l border-border p-3">
+                    <div 
+                      key={day} 
+                      className={cn(
+                        "border-l border-border p-3 transition-all min-h-[80px]",
+                        isTarget && "bg-accent/20 ring-2 ring-accent ring-inset"
+                      )}
+                      onDragOver={(e) => handleDragOver(e, day, slot.shift)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, day, slot.shift)}
+                    >
                       <div className="space-y-1">
                         {staffInSlot.map((s) => (
                           <Badge
-                            key={`${day}-${slot.label}-${s.id}`}
+                            key={s.id}
                             variant="outline"
-                            className={`w-full justify-start text-xs ${DEPARTMENT_COLORS[s.department]}`}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, s.id)}
+                            onDragEnd={handleDragEnd}
+                            className={cn(
+                              "w-full justify-start text-xs cursor-move transition-all",
+                              DEPARTMENT_COLORS[s.department],
+                              draggedStaff === s.id && "opacity-50 scale-95",
+                              "hover:scale-105 hover:shadow-md"
+                            )}
                           >
                             <span className="truncate">{s.name.split(' ')[0]}</span>
                           </Badge>
