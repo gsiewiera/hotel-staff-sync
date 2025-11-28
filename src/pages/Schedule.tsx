@@ -152,14 +152,15 @@ export function Schedule() {
           ];
         });
       } else {
-        // Dragging from unassigned panel - just add new instance
+        // Dragging from unassigned panel - add new scheduled instance, keep base staff member
         setStaff(prevStaff => {
-          const unassignedStaff = prevStaff.find(s => s.id === staffId && !s.day);
-          if (!unassignedStaff) return prevStaff;
+          const baseStaff = prevStaff.find(s => s.id === staffId);
+          if (!baseStaff) return prevStaff;
           
+          // Add new scheduled instance
           return [
-            ...prevStaff.filter(s => s.id !== staffId || s.day), // Keep all assigned instances
-            { ...unassignedStaff, day: newDay, shift: newShift }
+            ...prevStaff,
+            { ...baseStaff, day: newDay, shift: newShift }
           ];
         });
       }
@@ -203,7 +204,15 @@ export function Schedule() {
     setDraggedStaff(null);
   };
 
-  const unassignedStaff = staff.filter(s => !s.day);
+  // Show unique staff members in unassigned panel (one per staff member)
+  const uniqueStaffMap = new Map<string, StaffMember>();
+  staff.forEach(s => {
+    if (!uniqueStaffMap.has(s.id)) {
+      uniqueStaffMap.set(s.id, { ...s, day: undefined, shift: 'Morning' });
+    }
+  });
+  const unassignedStaff = Array.from(uniqueStaffMap.values());
+  
   const assignedStaff = staff.filter(s => s.day);
 
   const handleApplyTemplate = async (staffId: string, pattern: { day: string; shift: string }[]) => {
