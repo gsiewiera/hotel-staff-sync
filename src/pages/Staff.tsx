@@ -1,21 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StaffCard } from "@/components/StaffCard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StaffMember {
-  id: number;
+  id: string;
   name: string;
   department: string;
-  shift: string;
+  hourly_rate: number;
   avatar: string;
-  day?: string;
 }
 
 export function Staff() {
   const [selectedDept, setSelectedDept] = useState("all");
+  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
   const DEPARTMENTS = [
@@ -26,20 +28,37 @@ export function Staff() {
     { id: "restaurant", name: t("restaurant") },
   ];
 
-  const MOCK_STAFF: StaffMember[] = [
-    { id: 1, name: "Sarah Johnson", department: "frontdesk", shift: "Morning", avatar: "SJ", day: "Monday" },
-    { id: 2, name: "Michael Chen", department: "frontdesk", shift: "Evening", avatar: "MC", day: "Monday" },
-    { id: 3, name: "Emma Williams", department: "housekeeping", shift: "Morning", avatar: "EW", day: "Tuesday" },
-    { id: 4, name: "James Martinez", department: "housekeeping", shift: "Morning", avatar: "JM", day: "Wednesday" },
-    { id: 5, name: "Lisa Anderson", department: "maintenance", shift: "Day", avatar: "LA", day: "Thursday" },
-    { id: 6, name: "David Thompson", department: "restaurant", shift: "Split", avatar: "DT", day: "Friday" },
-    { id: 7, name: "Sophie Brown", department: "restaurant", shift: "Evening", avatar: "SB", day: "Saturday" },
-    { id: 8, name: "Ryan Davis", department: "frontdesk", shift: "Night", avatar: "RD", day: "Sunday" },
-  ];
+  const fetchStaff = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('staff_members')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      setStaff(data || []);
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
 
   const filteredStaff = selectedDept === "all" 
-    ? MOCK_STAFF 
-    : MOCK_STAFF.filter(s => s.department === selectedDept);
+    ? staff 
+    : staff.filter(s => s.department === selectedDept);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Loading staff...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -60,8 +79,8 @@ export function Staff() {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredStaff.map((staff) => (
-          <StaffCard key={staff.id} staff={staff} />
+        {filteredStaff.map((staffMember) => (
+          <StaffCard key={staffMember.id} staff={staffMember} onUpdate={fetchStaff} />
         ))}
       </div>
 
