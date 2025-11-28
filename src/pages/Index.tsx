@@ -5,6 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StaffCard } from "@/components/StaffCard";
 import { WeeklyCalendar } from "@/components/WeeklyCalendar";
+import { toast } from "sonner";
+
+export interface StaffMember {
+  id: number;
+  name: string;
+  department: string;
+  shift: string;
+  avatar: string;
+  day?: string;
+}
 
 const DEPARTMENTS = [
   { id: "all", name: "All Departments", color: "muted" },
@@ -14,23 +24,37 @@ const DEPARTMENTS = [
   { id: "restaurant", name: "Restaurant", color: "dept-restaurant" },
 ];
 
-const MOCK_STAFF = [
-  { id: 1, name: "Sarah Johnson", department: "frontdesk", shift: "Morning (7AM-3PM)", avatar: "SJ" },
-  { id: 2, name: "Michael Chen", department: "frontdesk", shift: "Evening (3PM-11PM)", avatar: "MC" },
-  { id: 3, name: "Emma Williams", department: "housekeeping", shift: "Morning (7AM-3PM)", avatar: "EW" },
-  { id: 4, name: "James Martinez", department: "housekeeping", shift: "Morning (7AM-3PM)", avatar: "JM" },
-  { id: 5, name: "Lisa Anderson", department: "maintenance", shift: "Day (8AM-4PM)", avatar: "LA" },
-  { id: 6, name: "David Thompson", department: "restaurant", shift: "Split (11AM-2PM, 5PM-10PM)", avatar: "DT" },
-  { id: 7, name: "Sophie Brown", department: "restaurant", shift: "Evening (5PM-11PM)", avatar: "SB" },
-  { id: 8, name: "Ryan Davis", department: "frontdesk", shift: "Night (11PM-7AM)", avatar: "RD" },
+const INITIAL_STAFF: StaffMember[] = [
+  { id: 1, name: "Sarah Johnson", department: "frontdesk", shift: "Morning", avatar: "SJ", day: "Monday" },
+  { id: 2, name: "Michael Chen", department: "frontdesk", shift: "Evening", avatar: "MC", day: "Monday" },
+  { id: 3, name: "Emma Williams", department: "housekeeping", shift: "Morning", avatar: "EW", day: "Tuesday" },
+  { id: 4, name: "James Martinez", department: "housekeeping", shift: "Morning", avatar: "JM", day: "Wednesday" },
+  { id: 5, name: "Lisa Anderson", department: "maintenance", shift: "Day", avatar: "LA", day: "Thursday" },
+  { id: 6, name: "David Thompson", department: "restaurant", shift: "Split", avatar: "DT", day: "Friday" },
+  { id: 7, name: "Sophie Brown", department: "restaurant", shift: "Evening", avatar: "SB", day: "Saturday" },
+  { id: 8, name: "Ryan Davis", department: "frontdesk", shift: "Night", avatar: "RD", day: "Sunday" },
 ];
 
 const Index = () => {
   const [selectedDept, setSelectedDept] = useState("all");
+  const [staff, setStaff] = useState<StaffMember[]>(INITIAL_STAFF);
 
   const filteredStaff = selectedDept === "all" 
-    ? MOCK_STAFF 
-    : MOCK_STAFF.filter(staff => staff.department === selectedDept);
+    ? staff 
+    : staff.filter(s => s.department === selectedDept);
+
+  const handleStaffDrop = (staffId: number, newDay: string, newShift: string) => {
+    setStaff(prevStaff => 
+      prevStaff.map(s => 
+        s.id === staffId 
+          ? { ...s, day: newDay, shift: newShift }
+          : s
+      )
+    );
+    
+    const staffMember = staff.find(s => s.id === staffId);
+    toast.success(`${staffMember?.name} moved to ${newDay} ${newShift} shift`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,7 +74,7 @@ const Index = () => {
             <div className="flex items-center gap-4">
               <Badge variant="outline" className="gap-2">
                 <Users className="h-4 w-4" />
-                {MOCK_STAFF.length} Staff Members
+                {staff.length} Staff Members
               </Badge>
               <Badge variant="outline" className="gap-2">
                 <Clock className="h-4 w-4" />
@@ -69,7 +93,12 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-6">
-            <WeeklyCalendar staff={MOCK_STAFF} />
+            <Card className="p-4 bg-accent/10 border-accent">
+              <p className="text-sm text-foreground">
+                <strong>💡 Tip:</strong> Drag and drop staff members to reassign them to different days and shifts
+              </p>
+            </Card>
+            <WeeklyCalendar staff={staff} onStaffDrop={handleStaffDrop} />
           </TabsContent>
 
           <TabsContent value="staff" className="space-y-6">
