@@ -10,6 +10,7 @@ import { Schedule } from "./pages/Schedule";
 import { Staff } from "./pages/Staff";
 import { Templates } from "./pages/Templates";
 import { Reports } from "./pages/Reports";
+import { Budget } from "./pages/Budget";
 import NotFound from "./pages/NotFound";
 import { Calendar, Users, Clock, Languages } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -87,6 +88,7 @@ function AppContent() {
               <Route path="/staff" element={<Staff />} />
               <Route path="/templates" element={<Templates />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/budget" element={<Budget />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
