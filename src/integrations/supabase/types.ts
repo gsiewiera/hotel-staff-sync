@@ -14,7 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      budgets: {
+        Row: {
+          created_at: string | null
+          department: string
+          id: string
+          month: number
+          weekly_budget: number
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          department: string
+          id?: string
+          month: number
+          weekly_budget: number
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          department?: string
+          id?: string
+          month?: number
+          weekly_budget?: number
+          year?: number
+        }
+        Relationships: []
+      }
+      shift_schedules: {
+        Row: {
+          created_at: string | null
+          day_of_week: string
+          hours: number
+          id: string
+          shift_type: string
+          staff_id: string
+          week_number: number
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: string
+          hours?: number
+          id?: string
+          shift_type: string
+          staff_id: string
+          week_number?: number
+          year?: number
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: string
+          hours?: number
+          id?: string
+          shift_type?: string
+          staff_id?: string
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_schedules_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_members: {
+        Row: {
+          avatar: string | null
+          created_at: string | null
+          department: string
+          hourly_rate: number
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string | null
+          department: string
+          hourly_rate?: number
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string | null
+          department?: string
+          hourly_rate?: number
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
