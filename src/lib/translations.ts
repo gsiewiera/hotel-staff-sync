@@ -122,6 +122,11 @@ export const translations = {
     failedToAddStaff: "Failed to add staff member",
     unassignedStaff: "Unassigned Staff",
     dragStaffToSchedule: "Drag staff onto the schedule",
+    
+    // 404 Page
+    pageNotFound: "Page Not Found",
+    oopsPageNotFound: "Oops! Page not found",
+    returnToHome: "Return to Home",
   },
   pl: {
     // Header
@@ -246,6 +251,140 @@ export const translations = {
     failedToAddStaff: "Nie udało się dodać pracownika",
     unassignedStaff: "Nieprzypisani Pracownicy",
     dragStaffToSchedule: "Przeciągnij pracowników na harmonogram",
+    
+    // 404 Page
+    pageNotFound: "Strona nie znaleziona",
+    oopsPageNotFound: "Ups! Strona nie znaleziona",
+    returnToHome: "Wróć do strony głównej",
+  },
+  de: {
+    // Header
+    appName: "Hotel-Personalplaner",
+    appTagline: "Verwalten Sie Ihr Team effizient",
+    staff: "Personal",
+    week: "Woche",
+    
+    // Sidebar
+    navigation: "Navigation",
+    schedule: "Zeitplan",
+    staffList: "Personal",
+    templates: "Vorlagen",
+    reports: "Berichte",
+    
+    // Schedule page
+    tip: "Tipp",
+    dragDropTip: "Ziehen Sie Mitarbeiter per Drag & Drop, um sie verschiedenen Tagen und Schichten zuzuweisen",
+    applyShiftTemplate: "Schichtvorlage anwenden",
+    print: "Drucken",
+    printSchedule: "Zeitplan drucken",
+    
+    // Staff page
+    filterByDepartment: "Nach Abteilung filtern",
+    allDepartments: "Alle Abteilungen",
+    frontDesk: "Rezeption",
+    housekeeping: "Housekeeping",
+    maintenance: "Wartung",
+    restaurant: "Restaurant",
+    noStaffInDepartment: "Keine Mitarbeiter in dieser Abteilung",
+    
+    // Templates page
+    shiftTemplates: "Schichtvorlagen",
+    shiftTemplatesDesc: "Vordefinierte Schichtmuster zur schnellen Zuweisung von Zeitplänen. Verwenden Sie diese Vorlagen in der Zeitplanansicht.",
+    fullWeek: "Volle Woche",
+    fullWeekDesc: "Gleiche Schicht, Montag bis Sonntag",
+    weekdaysOnly: "Nur Wochentage",
+    weekdaysOnlyDesc: "Montag bis Freitag",
+    weekendsOnly: "Nur Wochenenden",
+    weekendsOnlyDesc: "Samstag und Sonntag",
+    alternatingDays: "Wechselnde Tage",
+    alternatingDaysDesc: "Montag, Mittwoch, Freitag, Sonntag",
+    midWeek: "Mitte der Woche",
+    midWeekDesc: "Dienstag, Mittwoch, Donnerstag",
+    
+    // Reports page
+    reportsAnalytics: "Berichte & Analysen",
+    reportsDesc: "Planungsstatistiken und Personalanalysen anzeigen",
+    totalStaff: "Gesamtpersonal",
+    thisWeek: "Diese Woche",
+    avgHours: "Durchschn. Stunden",
+    departments: "Abteilungen",
+    departmentDistribution: "Abteilungsverteilung",
+    
+    // Days
+    monday: "Montag",
+    tuesday: "Dienstag",
+    wednesday: "Mittwoch",
+    thursday: "Donnerstag",
+    friday: "Freitag",
+    saturday: "Samstag",
+    sunday: "Sonntag",
+    
+    // Shifts
+    morning: "Morgen",
+    day: "Tag",
+    evening: "Abend",
+    night: "Nacht",
+    split: "Geteilt",
+    morningTime: "7:00-15:00",
+    dayTime: "8:00-16:00",
+    eveningTime: "15:00-23:00",
+    nightTime: "23:00-7:00",
+    splitTime: "Geteilte Schicht",
+    
+    // Template dialog
+    applyTemplate: "Schichtvorlage anwenden",
+    quicklyAssign: "Weisen Sie Mitarbeitern schnell gängige Schichtmuster zu",
+    selectStaffMember: "Mitarbeiter auswählen",
+    chooseStaffMember: "Wählen Sie einen Mitarbeiter",
+    selectShiftType: "Schichttyp auswählen",
+    selectTemplate: "Vorlage auswählen",
+    preview: "Vorschau",
+    cancel: "Abbrechen",
+    apply: "Vorlage anwenden",
+    
+    // Department legend
+    departmentLegend: "Abteilungslegende",
+    
+    // Toast messages
+    movedToShift: "verschoben zu",
+    shift: "Schicht",
+    appliedTemplate: "Vorlage angewendet für",
+    
+    // Time slot
+    timeSlot: "Zeitfenster",
+    
+    // Budget
+    budget: "Budget",
+    budgetAnalysis: "Personalbudget-Analyse",
+    budgetDesc: "Verfolgen Sie wöchentliche Personalkosten und vergleichen Sie sie mit Abteilungsbudgets",
+    totalBudget: "Gesamtbudget",
+    actualCost: "Tatsächliche Kosten",
+    variance: "Abweichung",
+    overallBudgetUsage: "Gesamtbudgetnutzung",
+    overBudget: "Budget überschritten um",
+    remaining: "Verbleibend",
+    departmentBreakdown: "Abteilungsaufschlüsselung",
+    loadingBudgetData: "Budgetdaten werden geladen...",
+    weeklyBudget: "Wochenbudget",
+    underBudget: "Unter Budget",
+    budgetUsage: "Budgetnutzung",
+    
+    // Add Staff
+    addStaff: "Personal hinzufügen",
+    addNewStaffMember: "Neues Personalmitglied hinzufügen",
+    addStaffDesc: "Fügen Sie ein neues Personalmitglied zum Team hinzu. Es wird im nicht zugewiesenen Pool angezeigt.",
+    name: "Name",
+    hourlyRate: "Stundensatz",
+    adding: "Wird hinzugefügt...",
+    addedToStaff: "Zum Personal hinzugefügt",
+    failedToAddStaff: "Personalmitglied konnte nicht hinzugefügt werden",
+    unassignedStaff: "Nicht zugewiesenes Personal",
+    dragStaffToSchedule: "Ziehen Sie Personal in den Zeitplan",
+    
+    // 404 Page
+    pageNotFound: "Seite nicht gefunden",
+    oopsPageNotFound: "Hoppla! Seite nicht gefunden",
+    returnToHome: "Zurück zur Startseite",
   },
 };
 

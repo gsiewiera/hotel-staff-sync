@@ -74,6 +74,12 @@ function AppContent() {
                       >
                         🇵🇱 Polski
                       </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setLanguage("de")}
+                        className={language === "de" ? "bg-accent" : ""}
+                      >
+                        🇩🇪 Deutsch
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
