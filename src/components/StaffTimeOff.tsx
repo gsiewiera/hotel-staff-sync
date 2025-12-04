@@ -15,7 +15,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Plus, Trash2, Calendar } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Plus, Trash2, Calendar, Lock } from "lucide-react"
 import { format } from "date-fns";
 
 interface StaffTimeOffProps {
@@ -34,6 +35,7 @@ interface TimeOffRequest {
 
 export function StaffTimeOff({ staffId }: StaffTimeOffProps) {
   const { t } = useLanguage();
+  const { isManager } = useAuth();
   const [requests, setRequests] = useState<TimeOffRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -228,29 +230,38 @@ export function StaffTimeOff({ staffId }: StaffTimeOffProps) {
                   )}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Select
-                    value={request.status}
-                    onValueChange={(value) =>
-                      updateStatus(request.id, value as "pending" | "approved" | "rejected")
-                    }
-                  >
-                    <SelectTrigger className="h-7 w-24 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">{t("pending")}</SelectItem>
-                      <SelectItem value="approved">{t("approved")}</SelectItem>
-                      <SelectItem value="rejected">{t("rejected")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive"
-                    onClick={() => deleteRequest(request.id)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+                  {isManager ? (
+                    <Select
+                      value={request.status}
+                      onValueChange={(value) =>
+                        updateStatus(request.id, value as "pending" | "approved" | "rejected")
+                      }
+                    >
+                      <SelectTrigger className="h-7 w-24 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">{t("pending")}</SelectItem>
+                        <SelectItem value="approved">{t("approved")}</SelectItem>
+                        <SelectItem value="rejected">{t("rejected")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant="outline" className="h-7 text-xs flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      {t("managerOnly")}
+                    </Badge>
+                  )}
+                  {isManager && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive"
+                      onClick={() => deleteRequest(request.id)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>
