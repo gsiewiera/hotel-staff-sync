@@ -9,10 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { User, Phone, MapPin, AlertTriangle, Calendar } from "lucide-react";
+import { User, Phone, MapPin, AlertTriangle, Clock, CalendarOff } from "lucide-react";
+import { StaffAvailability } from "./StaffAvailability";
+import { StaffTimeOff } from "./StaffTimeOff";
 
 interface StaffMember {
   id: string;
@@ -100,22 +103,30 @@ export function StaffEditDialog({ staff, open, onOpenChange, onUpdate }: StaffEd
         </DialogHeader>
 
         <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="basic" className="flex items-center gap-1">
               <User className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("personalInfo")}</span>
+              <span className="hidden lg:inline">{t("personalInfo")}</span>
             </TabsTrigger>
             <TabsTrigger value="contact" className="flex items-center gap-1">
               <Phone className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("contactInfo")}</span>
+              <span className="hidden lg:inline">{t("contactInfo")}</span>
             </TabsTrigger>
             <TabsTrigger value="address" className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("address")}</span>
+              <span className="hidden lg:inline">{t("address")}</span>
             </TabsTrigger>
             <TabsTrigger value="emergency" className="flex items-center gap-1">
               <AlertTriangle className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("emergencyContact")}</span>
+              <span className="hidden lg:inline">{t("emergencyContact")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="availability" className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span className="hidden lg:inline">{t("availability")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="timeoff" className="flex items-center gap-1">
+              <CalendarOff className="h-4 w-4" />
+              <span className="hidden lg:inline">{t("timeOff")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -238,6 +249,18 @@ export function StaffEditDialog({ staff, open, onOpenChange, onUpdate }: StaffEd
                 />
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="availability" className="mt-4">
+            <ScrollArea className="h-[400px] pr-4">
+              <StaffAvailability staffId={staff.id} />
+            </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="timeoff" className="mt-4">
+            <ScrollArea className="h-[400px] pr-4">
+              <StaffTimeOff staffId={staff.id} />
+            </ScrollArea>
           </TabsContent>
         </Tabs>
 
