@@ -182,6 +182,22 @@ export const translations = {
     requestUpdated: "Request status updated",
     deleteRequest: "Delete Request",
     requestDeleted: "Request deleted",
+    
+    // Auth
+    login: "Login",
+    signup: "Sign Up",
+    logout: "Logout",
+    password: "Password",
+    fullName: "Full Name",
+    loginSuccess: "Logged in successfully",
+    signupSuccess: "Account created successfully",
+    invalidCredentials: "Invalid email or password",
+    emailAlreadyRegistered: "Email already registered",
+    managerOnly: "Only managers can approve requests",
+    yourRole: "Your Role",
+    admin: "Admin",
+    manager: "Manager",
+    staffRole: "Staff",
   },
   pl: {
     // Header
@@ -366,6 +382,22 @@ export const translations = {
     requestUpdated: "Status wniosku zaktualizowany",
     deleteRequest: "Usuń Wniosek",
     requestDeleted: "Wniosek usunięty",
+    
+    // Auth
+    login: "Zaloguj się",
+    signup: "Zarejestruj się",
+    logout: "Wyloguj",
+    password: "Hasło",
+    fullName: "Imię i nazwisko",
+    loginSuccess: "Zalogowano pomyślnie",
+    signupSuccess: "Konto utworzone pomyślnie",
+    invalidCredentials: "Nieprawidłowy email lub hasło",
+    emailAlreadyRegistered: "Email jest już zarejestrowany",
+    managerOnly: "Tylko menedżerowie mogą zatwierdzać wnioski",
+    yourRole: "Twoja rola",
+    admin: "Administrator",
+    manager: "Menedżer",
+    staffRole: "Pracownik",
   },
   de: {
     // Header
@@ -550,6 +582,22 @@ export const translations = {
     requestUpdated: "Antragsstatus aktualisiert",
     deleteRequest: "Antrag löschen",
     requestDeleted: "Antrag gelöscht",
+    
+    // Auth
+    login: "Anmelden",
+    signup: "Registrieren",
+    logout: "Abmelden",
+    password: "Passwort",
+    fullName: "Vollständiger Name",
+    loginSuccess: "Erfolgreich angemeldet",
+    signupSuccess: "Konto erfolgreich erstellt",
+    invalidCredentials: "Ungültige E-Mail oder Passwort",
+    emailAlreadyRegistered: "E-Mail bereits registriert",
+    managerOnly: "Nur Manager können Anträge genehmigen",
+    yourRole: "Ihre Rolle",
+    admin: "Administrator",
+    manager: "Manager",
+    staffRole: "Mitarbeiter",
   },
 };
 
