@@ -84,30 +84,57 @@ export type Database = {
       }
       staff_members: {
         Row: {
+          address: string | null
           avatar: string | null
+          city: string | null
           created_at: string | null
+          date_of_birth: string | null
           department: string
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          hire_date: string | null
           hourly_rate: number
           id: string
           name: string
+          phone: string | null
+          postal_code: string | null
           updated_at: string | null
         }
         Insert: {
+          address?: string | null
           avatar?: string | null
+          city?: string | null
           created_at?: string | null
+          date_of_birth?: string | null
           department: string
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          hire_date?: string | null
           hourly_rate?: number
           id?: string
           name: string
+          phone?: string | null
+          postal_code?: string | null
           updated_at?: string | null
         }
         Update: {
+          address?: string | null
           avatar?: string | null
+          city?: string | null
           created_at?: string | null
+          date_of_birth?: string | null
           department?: string
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          hire_date?: string | null
           hourly_rate?: number
           id?: string
           name?: string
+          phone?: string | null
+          postal_code?: string | null
           updated_at?: string | null
         }
         Relationships: []

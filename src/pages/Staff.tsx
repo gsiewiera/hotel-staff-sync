@@ -12,6 +12,15 @@ interface StaffMember {
   department: string;
   hourly_rate: number;
   avatar: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  postal_code?: string | null;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
+  date_of_birth?: string | null;
+  hire_date?: string | null;
 }
 
 export function Staff() {
