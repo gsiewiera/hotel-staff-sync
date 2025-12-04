@@ -127,6 +127,15 @@ export const translations = {
     pageNotFound: "Page Not Found",
     oopsPageNotFound: "Oops! Page not found",
     returnToHome: "Return to Home",
+    
+    // Staff KPIs
+    staffKPIs: "Staff KPIs",
+    avgHourlyRate: "Avg Hourly Rate",
+    totalWeeklyCost: "Total Weekly Cost",
+    scheduledThisWeek: "Scheduled This Week",
+    staffMembers: "staff members",
+    perHour: "per hour",
+    estimated: "estimated",
   },
   pl: {
     // Header
@@ -256,6 +265,15 @@ export const translations = {
     pageNotFound: "Strona nie znaleziona",
     oopsPageNotFound: "Ups! Strona nie znaleziona",
     returnToHome: "Wróć do strony głównej",
+    
+    // Staff KPIs
+    staffKPIs: "Wskaźniki KPI Personelu",
+    avgHourlyRate: "Śr. Stawka Godzinowa",
+    totalWeeklyCost: "Całkowity Koszt Tygodniowy",
+    scheduledThisWeek: "Zaplanowani w Tym Tygodniu",
+    staffMembers: "pracownicy",
+    perHour: "za godzinę",
+    estimated: "szacowany",
   },
   de: {
     // Header
@@ -385,6 +403,15 @@ export const translations = {
     pageNotFound: "Seite nicht gefunden",
     oopsPageNotFound: "Hoppla! Seite nicht gefunden",
     returnToHome: "Zurück zur Startseite",
+    
+    // Staff KPIs
+    staffKPIs: "Personal-KPIs",
+    avgHourlyRate: "Durchschn. Stundensatz",
+    totalWeeklyCost: "Gesamtwochenkosten",
+    scheduledThisWeek: "Diese Woche eingeplant",
+    staffMembers: "Mitarbeiter",
+    perHour: "pro Stunde",
+    estimated: "geschätzt",
   },
 };
 
